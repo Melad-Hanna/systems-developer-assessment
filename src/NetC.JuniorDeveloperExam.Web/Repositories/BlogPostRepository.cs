@@ -10,7 +10,7 @@ using System.Web;
 namespace NetC.JuniorDeveloperExam.Web.Repositories
 {
     /// <summary>
-    /// This Repo Represents the data access layer 
+    /// This Repo Represents the data access layer
     /// It handles file read or write operation
     /// </summary>
     public class BlogPostRepository : IBlogPostRepository
@@ -24,9 +24,11 @@ namespace NetC.JuniorDeveloperExam.Web.Repositories
             }
         }
 
-        // This Method:
-        // 1- Reads the json file
-        // 2- convert json object to a list of post and returns it
+        /// <summary>
+        /// 1- Reads the json file
+        /// 2- convert json object to a list of post and returns it
+        /// </summary>
+        /// <returns>List of All Posts</returns>
         public List<Post> GetAllPosts()
         {
             List<JToken> blogPostsJToken;
@@ -41,15 +43,19 @@ namespace NetC.JuniorDeveloperExam.Web.Repositories
             return blogPosts;
         }
 
-        // This Method Recieves Post id and returns Post 
+        /// <summary>
+        /// 1- This Method Recieves Post id and returns Post
+        /// </summary>
+        /// <returns>Post Object</returns>
         public Post GetBostById(int id)
         {
             return GetAllPosts().FirstOrDefault(p => p.id == id);
         }
 
-        // This Method:
-        // 1- receives a list of post object and serialize it to json string
-        // 2- saves the serialized string to json file
+        /// <summary>
+        /// 1- receives a list of post object and serialize it to json string 
+        /// 2- saves the serialized string to json file
+        /// </summary>
         public void SavePosts(List<Post> posts)
         {
             var blogPosts = new

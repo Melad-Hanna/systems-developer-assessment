@@ -31,10 +31,14 @@ namespace NetC.JuniorDeveloperExam.Web.Services
             return _postRepository.GetBostById(id);
         }
 
-        // This Method:
-        // 1- Recieves a post comment with post Id
-        // 2- Add comment to post's list of comments
-        // 3- calls the repository to save the changes
+        /// <summary>
+        /// 1- Recieves a post comment with post Id
+        /// 2- Add comment to post's list of comments
+        /// 3- calls the repository to save the changes
+        /// </summary>
+        /// <param name="postId">Post Id</param>
+        /// <param name="comment">Comment to be added</param>
+        /// <returns>Updated Post Object</returns>
         public Post AddComment(int postId, Comment comment)
         {
             List<Post> posts = _postRepository.GetAllPosts();
@@ -47,10 +51,15 @@ namespace NetC.JuniorDeveloperExam.Web.Services
             return post;
         }
 
-        // This Method:
-        // 1- Recieves a reply on post's comment
-        // 2- Add reply to comment's list of replies
-        // 3- calls the repository to save the changes
+        /// <summary>
+        /// 1- Recieves a reply on post's comment
+        /// 2- Add reply to comment's list of replies
+        /// 3- calls the repository to save the changes
+        /// </summary>
+        /// <param name="postId">Post Id</param>
+        /// <param name="commentIndex">Comment Index in Lis of post's comments</param>
+        /// <param name="comment">Reply to be added</param>
+        /// <returns>Updated Post Object</returns>
         public Post AddReplyToComment(int postId, int commentIndex, Comment comment)
         {
             List<Post> posts = _postRepository.GetAllPosts();
