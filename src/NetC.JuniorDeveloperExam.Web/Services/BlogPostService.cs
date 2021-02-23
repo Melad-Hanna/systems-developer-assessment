@@ -5,6 +5,8 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mail;
+using System.Text.RegularExpressions;
 using System.Web;
 
 namespace NetC.JuniorDeveloperExam.Web.Services
@@ -78,8 +80,12 @@ namespace NetC.JuniorDeveloperExam.Web.Services
         {
             try
             {
-                var email = new System.Net.Mail.MailAddress(emailAddress);
-                return email.Address == emailAddress;
+                Regex regex = new Regex(@"^[\w!#$%&'*+\-/=?\^_`{|}~]+(\.[\w!#$%&'*+\-/=?\^_`{|}~]+)*"
+                                    + "@"
+                                    + @"((([\w]+([-\w]*[\w]+)*\.)+[a-zA-Z]+)|"
+                                    + @"((([01]?[0-9]{1,2}|2[0-4][0-9]|25[0-5]).){3}[01]?[0-9]{1,2}|2[0-4][0-9]|25[0-5]))\z",
+                         RegexOptions.CultureInvariant | RegexOptions.Singleline);
+                return regex.IsMatch(emailAddress);
             }
             catch
             {
