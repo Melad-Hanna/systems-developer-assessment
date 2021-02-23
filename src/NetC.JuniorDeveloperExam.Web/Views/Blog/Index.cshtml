@@ -1,0 +1,74 @@
+﻿@model NetC.JuniorDeveloperExam.Web.Models.Post
+@{
+    ViewBag.Title = "Blog Post";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <div class="row">
+
+        <!-- Blog post content -->
+        <div class="col-lg-12">
+
+            <!-- Title -->
+            <h1 class="mt-4">@Model.title</h1>
+
+            <hr />
+
+            <!-- Date/Time -->
+            <p>Posted on @Model.date.ToLongDateString()</p>
+
+            <hr>
+
+            <!-- Preview Image -->
+            <img class="img-fluid rounded" src="@Model.image" alt="@Model.title" />
+
+            <hr>
+            <!-- Post Content -->
+            @Html.Raw(Model.htmlContent)
+
+            <hr>
+
+            <!-- Blog post comment form -->
+            <div class="card my-4">
+                <h5 class="card-header">Leave a Comment:</h5>
+                <div class="card-body">
+                    <form method="post" action="@Url.Action("Index", "Blog")">
+                        @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="Name">Name</label>
+                                <input type="text" class="form-control" id="Name" name="name" placeholder="Name" required>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="EmailAddress">Email Address</label>
+                                <input type="email" class="form-control" id="EmailAddress" name="emailAddress" placeholder="Email Address" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="Message">Message</label>
+                            <textarea id="Message" class="form-control" name="message" rows="3" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Blog post comments -->
+            @if (Model.comments != null)
+            {
+                foreach (var comment in Model.comments)
+                {
+                    <div class="media mb-4">
+                        <img class="d-flex mr-3 rounded-circle user-avatar" src="https://eu.ui-avatars.com/api/?name=@comment.name" alt="@comment.name">
+                        <div class="media-body">
+                            <h5 class="mt-0">@comment.name <small><em>(@comment.date.ToLongDateString())</em></small></h5>
+                            @comment.message
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>
