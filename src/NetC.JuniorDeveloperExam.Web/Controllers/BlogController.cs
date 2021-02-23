@@ -61,7 +61,7 @@ namespace NetC.JuniorDeveloperExam.Web.Controllers
                 else
                     ModelState.AddModelError("emailAddress", "The email address is not a valid one.");
             }
-            return Json(ModelState.Values.SelectMany(v => v.Errors), JsonRequestBehavior.AllowGet);
+            return Json(ModelState.Values.SelectMany(v => v.Errors).Select(v => v.ErrorMessage), JsonRequestBehavior.AllowGet);
         }
 
     }

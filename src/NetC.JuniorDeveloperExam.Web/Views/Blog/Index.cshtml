@@ -135,25 +135,44 @@
                 });
             }
 
+            const validateCommentForm = (comment) => {
+                let errors = [];
+                if (comment.name.trim() === "")
+                    errors.push("The name field is required");
+                if (comment.emailAddress.trim() === "")
+                    errors.push("The emailAddress field is required");
+                if (comment.message.trim() === "")
+                    errors.push("The message field is required");
+                return errors;
+            }
+
+            const renderFormErrors = (alertElement, errorsArray) => {
+                $(alertElement).addClass('d-none').html('');
+                for (let i = 0; i < errorsArray.length; i++)
+                    $(alertElement).append(`${errorsArray[i]} <br />`);
+                $(alertElement).removeClass('d-none');
+            }
+
             $(document).ready(function () {
                 $("#commentsSection").on('submit', 'form.replyForm', function (event) {
                     event.preventDefault();
-                    
                     let formInputs = event.target.elements;
                     let postId = @Url.RequestContext.RouteData.Values["id"];
                     let commentId = event.target.getAttribute("data-comment-id");
+                    let formAlert = $(event.target).find('.alert');
                     let comment = {
                         name: formInputs.name.value,
                         emailAddress: formInputs.emailAddress.value,
                         message: formInputs.message.value,
                     };
+                    let errors = validateCommentForm(comment);
+                    if (errors.length > 0) {
+                        renderFormErrors(formAlert, errors);
+                        return;
+                    }
                     postCommentReply(postId, commentId, comment).then(res => {
                         if (res.length === 0) window.location = '@Url.Action("Index", "Blog", new { id = Url.RequestContext.RouteData.Values["id"] })';
-                        let fromAlert = $(event.target).find('.alert');
-                        $(fromAlert).addClass('d-none').html('');
-                        for (let i = 0; i < res.length; i++)
-                            $(fromAlert).append(`${res[i].ErrorMessage} <br />`);
-                        $(fromAlert).removeClass('d-none');
+                        renderFormErrors(formAlert, res);
                     });
                 });
             });
