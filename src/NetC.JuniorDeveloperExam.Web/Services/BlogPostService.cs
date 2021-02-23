@@ -15,7 +15,7 @@ namespace NetC.JuniorDeveloperExam.Web.Services
         /// This service represents Business Logic Layer 
         /// All Bussiness Logic should be included into this page
         /// </summary>
-        
+
         // Injecting the repository into the service
         private readonly IBlogPostRepository _postRepository;
         public BlogPostService(IBlogPostRepository postRepository)
@@ -35,15 +35,47 @@ namespace NetC.JuniorDeveloperExam.Web.Services
         // 1- Recieves a post comment with post Id
         // 2- Add comment to post's list of comments
         // 3- calls the repository to save the changes
-        public void AddComment(int postId, Comment comment)
+        public Post AddComment(int postId, Comment comment)
         {
             List<Post> posts = _postRepository.GetAllPosts();
             comment.date = DateTime.Now;
-            Post post  = posts.FirstOrDefault(p => p.id == postId);
+            Post post = posts.FirstOrDefault(p => p.id == postId);
             if (post.comments == null)
                 post.comments = new List<Comment>();
             post.comments.Add(comment);
             _postRepository.SavePosts(posts);
+            return post;
+        }
+
+        // This Method:
+        // 1- Recieves a reply on post's comment
+        // 2- Add reply to comment's list of replies
+        // 3- calls the repository to save the changes
+        public Post AddReplyToComment(int postId, int commentIndex, Comment comment)
+        {
+            List<Post> posts = _postRepository.GetAllPosts();
+            comment.date = DateTime.Now;
+            Post post = posts.FirstOrDefault(p => p.id == postId);
+            if (post.comments.ElementAt(commentIndex).replies == null)
+                post.comments.ElementAt(commentIndex).replies = new List<Comment>();
+            post.comments.ElementAt(commentIndex).replies.Add(comment);
+            _postRepository.SavePosts(posts);
+            return post;
+        }
+
+
+        // This method is used to validate the entered email
+        public bool ValidateEmail(string emailAddress)
+        {
+            try
+            {
+                var email = new System.Net.Mail.MailAddress(emailAddress);
+                return email.Address == emailAddress;
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }

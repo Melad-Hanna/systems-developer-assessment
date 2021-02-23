@@ -55,20 +55,108 @@
                 </div>
             </div>
 
+
             <!-- Blog post comments -->
-            @if (Model.comments != null)
-            {
-                foreach (var comment in Model.comments)
+            <div id="commentsSection">
+                @if (Model.comments != null)
                 {
-                    <div class="media mb-4">
-                        <img class="d-flex mr-3 rounded-circle user-avatar" src="https://eu.ui-avatars.com/api/?name=@comment.name" alt="@comment.name">
-                        <div class="media-body">
-                            <h5 class="mt-0">@comment.name <small><em>(@comment.date.ToLongDateString())</em></small></h5>
-                            @comment.message
+                    for (var i = 0; i < Model.comments.Count; i++)
+                    {
+                        <div class="media mb-4">
+                            <img class="d-flex mr-3 rounded-circle user-avatar" src="https://eu.ui-avatars.com/api/?name=@Model.comments.ElementAt(i).name" alt="@Model.comments.ElementAt(i).name">
+                            <div class="media-body" data-comment-id="@i">
+                                <h5 class="mt-0">@Model.comments.ElementAt(i).name <small><em>(@Model.comments.ElementAt(i).date.ToLongDateString())</em></small></h5>
+                                @Model.comments.ElementAt(i).message
+                                <br />
+                                <a onclick="addReplyForm(@i)" class="pr-3" href="javascript:void(0)">
+                                    Reply
+                                </a>
+                                <div class="replyFormDiv"></div>
+                                @if (Model.comments.ElementAt(i).replies != null)
+                                {
+                                    foreach (var reply in Model.comments.ElementAt(i).replies)
+                                    {
+                                        <div class="media mb-4 mt-3">
+                                            <img class="d-flex mr-3 rounded-circle user-avatar" src="https://eu.ui-avatars.com/api/?name=@reply.name" alt="@reply.name">
+                                            <div class="media-body">
+                                                <h5 class="mt-0">@reply.name <small><em>(@reply.date.ToLongDateString())</em></small></h5>
+                                                @reply.message
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                            </div>
                         </div>
-                    </div>
+                    }
                 }
-            }
+            </div>
         </div>
     </div>
+
+    @section scripts{
+        <script>
+            const renderReplyForm = (domElementToRenderIn, commentId) => {
+                $(domElementToRenderIn).html(`
+                    <form class="replyForm mt-2" data-comment-id="${commentId}">
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <input type="text" class="form-control" id="Name" name="name" placeholder="Name" required>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <input type="email" class="form-control" id="EmailAddress" name="emailAddress" placeholder="Email Address" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <textarea id="Message" class="form-control" name="message" rows="2" placeholder="Write you reply" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-sm btn-primary">Submit</button>
+                        <button type="button" class="btn btn-sm btn-danger" onclick="removeReplyForm(this)">Cancel</button>
+                        <div class="alert alert-danger d-none mt-2 mb-2" role="alert"></div>
+                    </form>
+                `);
+            }
+
+            const addReplyForm = (commentId) => {
+                renderReplyForm(document.querySelector(`.media-body[data-comment-id="${commentId}"] .replyFormDiv`), commentId);
+            }
+
+            const removeReplyForm = (obj) => {
+                $(obj.parentElement).remove();
+            }
+
+            const postCommentReply = (postId, commentId, comment) => {
+                return $.ajax({
+                    type: "POST",
+                    url: '/Blog/@Url.RequestContext.RouteData.Values["id"]/PostReply',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: `{id: ${postId}, commentId: ${commentId}, comment: ${JSON.stringify(comment)}}`,
+                    async: true
+                });
+            }
+
+            $(document).ready(function () {
+                $("#commentsSection").on('submit', 'form.replyForm', function (event) {
+                    event.preventDefault();
+                    
+                    let formInputs = event.target.elements;
+                    let postId = @Url.RequestContext.RouteData.Values["id"];
+                    let commentId = event.target.getAttribute("data-comment-id");
+                    let comment = {
+                        name: formInputs.name.value,
+                        emailAddress: formInputs.emailAddress.value,
+                        message: formInputs.message.value,
+                    };
+                    postCommentReply(postId, commentId, comment).then(res => {
+                        if (res.length === 0) window.location = '@Url.Action("Index", "Blog", new { id = Url.RequestContext.RouteData.Values["id"] })';
+                        let fromAlert = $(event.target).find('.alert');
+                        $(fromAlert).addClass('d-none').html('');
+                        for (let i = 0; i < res.length; i++)
+                            $(fromAlert).append(`${res[i].ErrorMessage} <br />`);
+                        $(fromAlert).removeClass('d-none');
+                    });
+                });
+            });
+        </script>
+    }
 </div>

@@ -39,17 +39,30 @@ namespace NetC.JuniorDeveloperExam.Web.Controllers
             Post post = _blogPostService.GetPostById(id);
             if (ModelState.IsValid)
             {
-                try
-                {
-                    var email = new System.Net.Mail.MailAddress(comment.emailAddress);
-                    _blogPostService.AddComment(id, comment);
-                }
-                catch
-                {
+                if (_blogPostService.ValidateEmail(comment.emailAddress))
+                    post = _blogPostService.AddComment(id, comment);
+                else
                     ModelState.AddModelError("emailAddress", "The email address is not a valid one.");
-                }
             }
             return View(post);
         }
+
+
+        // Post Call
+        // 1- Recieves a reply on post comment
+        // 2- Call Service to save reply
+        [HttpPost]
+        public ActionResult PostReply(int id, int commentId, Comment comment)
+        {
+            if (ModelState.IsValid)
+            {
+                if (_blogPostService.ValidateEmail(comment.emailAddress))
+                    _blogPostService.AddReplyToComment(id, commentId, comment);
+                else
+                    ModelState.AddModelError("emailAddress", "The email address is not a valid one.");
+            }
+            return Json(ModelState.Values.SelectMany(v => v.Errors), JsonRequestBehavior.AllowGet);
+        }
+
     }
 }

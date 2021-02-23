@@ -9,6 +9,8 @@ namespace NetC.JuniorDeveloperExam.Web.Services
     public interface IBlogPostService
     {
         Post GetPostById(int id);
-        void AddComment(int postId, Comment comment);
+        Post AddComment(int postId, Comment comment);
+        Post AddReplyToComment(int postId, int commentIndex, Comment comment);
+        bool ValidateEmail(string emailAddress);
     }
 }

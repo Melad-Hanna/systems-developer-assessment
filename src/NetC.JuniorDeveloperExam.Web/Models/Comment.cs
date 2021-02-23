@@ -15,5 +15,6 @@ namespace NetC.JuniorDeveloperExam.Web.Models
         public string emailAddress { get; set; }
         [Required]
         public string message { get; set; }
+        public ICollection<Comment> replies { get; set; }
     }
 }

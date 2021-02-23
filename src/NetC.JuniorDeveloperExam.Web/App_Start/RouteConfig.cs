@@ -17,6 +17,13 @@ namespace NetC.JuniorDeveloperExam.Web
             );
 
             routes.MapRoute(
+                name: "BlogPostAjax",
+                url: "{controller}/{id}/{action}",
+                defaults: new { controller = "Blog", action = "Index" },
+                new { id = @"\d+" }
+            );
+
+            routes.MapRoute(
                 name: "NotFound",
                 url: "{*url}",
                 defaults: new { controller = "HttpErrors", action = "NotFound" }
